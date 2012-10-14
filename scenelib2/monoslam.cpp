@@ -702,6 +702,38 @@ void MonoSLAM::exterminate_features()
   }
 }
 
+// Toggle the selection of a feature (for making measurements). This is called
+// to manually select or deselect a feature.
+// @param lab The label (starting from zero) for the feature to toggle.
+bool MonoSLAM::toggle_feature_lab(int lab)
+{
+  Feature *fp;
+
+  if (!(fp = find_feature_lab(lab))) {
+    cerr << "Feature with label " << lab << " not found." << endl;
+    return  false;
+  }
+
+  if (fp->selected_flag_)
+    return  deselect_feature(fp);
+  else
+    return  select_feature(fp);
+}
+
+// Returns the feature with a given label. If the feature does not exist, NULL
+// is returned.
+Feature* MonoSLAM::find_feature_lab(int lab)
+{
+  vector<Feature *>::iterator it;
+
+  for (it = feature_list_.begin(); it != feature_list_.end(); ++it) {
+    if ((*it)->label_ == lab)
+      return *it;
+  }
+
+  return  NULL;
+}
+
 // Set the current marked feature. Marking a feature is used to identify a feature
 // for deletion (by calling delete_feature()), or before calling
 // print_marked_feature_state(), get_marked_feature_state() or
@@ -1500,12 +1532,43 @@ void MonoSLAM::delete_partially_initialised_feature(
     mark_feature_by_lab(currently_marked_feature);
 }
 
+void MonoSLAM::InitialiseAutoFeature(cv::Mat frame)
+{
+  Eigen::Vector3d u;
+  u.setZero();
+
+  AutoInitialiseFeature(frame, u);
+}
+
 void MonoSLAM::print_robot_state()
 {
   cout << "[Robot state]" << endl;
   cout << xv_ << endl;
   cout << "[Robot covariance]" << endl;
   cout << Pxx_ << endl;
+}
+
+bool MonoSLAM::SavePatch()
+{
+  if (marked_feature_label_ == -1) {
+    return  false;
+  }
+
+  vector<Feature *>::iterator it_to_save;
+
+  for (it_to_save = feature_list_.begin(); it_to_save != feature_list_.end();
+       ++it_to_save) {
+    if ((int)((*it_to_save)->label_) == marked_feature_label_)
+      break;
+  }
+
+  if (it_to_save == feature_list_.end()) {
+    return  false;
+  }
+
+  cv::imwrite("patch.png", (*it_to_save)->patch_);
+
+  return  true;
 }
 
 void MonoSLAM::Init(const string &config_path)

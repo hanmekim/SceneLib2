@@ -63,6 +63,8 @@ class GraphicTool {
               const bool &chk_display_2d_descriptors, const bool &chk_display_2d_search_regions,
               const bool &chk_display_initialisation);
 
+  int Picker(int x, int y, bool threed);
+
  private:
   void Init();
   void DrawRectifiedAR(cv::Mat frame,
@@ -79,7 +81,8 @@ class GraphicTool {
   void DrawEstimatedSemiInfiniteLine(const Eigen::VectorXd &yigraphics,
                                      const double line_length, const int name_to_draw);
   void DrawAxes();
-  void DrawDescriptors(double draw_patch_x, double draw_patch_y, const cv::Mat &patch);
+  void DrawDescriptors(double draw_patch_x, double draw_patch_y,
+                       const cv::Mat &patch, const int name_to_draw);
   void DrawPatch(const double u, const double v, const cv::Mat &patch);
   void Draw2DPartiallyInitialisedLineEllipses(Feature *fp);
   void Draw2DInitialisationBoxes(const bool location_selected_flag,
@@ -130,7 +133,17 @@ class GraphicTool {
   void SetProjectionMatrix();
   void UpdateDrawingDimension(const Eigen::Vector3d& v);
 
+  bool selection_mode_;
   bool bInitialised;
+
+  cv::Mat *frame_;
+  bool chk_rectify_image_display_;
+  bool chk_display_trajectory_;
+  bool chk_display_3d_features_;
+  bool chk_display_3d_uncertainties_;
+  bool chk_display_2d_descriptors_;
+  bool chk_display_2d_search_regions_;
+  bool chk_display_initialisation_;
 
   GLUquadricObj *sphere_quad_;
   GLUquadricObj *cylinder_quad_;
@@ -142,6 +155,8 @@ class GraphicTool {
 
   GLuint  texName_;
   int     texWidth_, texHeight_;
+
+  int     clicked_x_, clicked_y_;
 
   // q in state vector is qWR between world frame and Scene robot frame
   // What we need to plot though uses GL object frame O

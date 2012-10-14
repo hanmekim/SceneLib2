@@ -106,6 +106,7 @@ void GraphicTool::Init()
   gluQuadricDrawStyle(circle_quad_, GLU_FILL);
   gluQuadricNormals(circle_quad_, GLU_NONE);
 
+  selection_mode_ = false;
   bInitialised = true;
 }
 
@@ -116,12 +117,16 @@ void GraphicTool::Draw3dScene(const bool &chk_display_trajectory,
   if(!bInitialised)
     Init();
 
+  // save the current settings for selection
+  chk_display_trajectory_ = chk_display_trajectory;
+  chk_display_3d_features_ = chk_display_3d_features;
+  chk_display_3d_uncertainties_ = chk_display_3d_uncertainties;
+
   // need to reset these to decrease axes accordingly
   xmin_ = xmax_ = ymin_ = ymax_ = zmin_ = zmax_ = 0.0;
 
   glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-  // Draw Camera
   monoslam_ptr_->motion_model_->func_xp(monoslam_ptr_->xv_);
   monoslam_ptr_->motion_model_->func_r(monoslam_ptr_->motion_model_->xpRES_);
   monoslam_ptr_->motion_model_->func_q(monoslam_ptr_->motion_model_->xpRES_);
@@ -180,6 +185,16 @@ void GraphicTool::DrawAR(cv::Mat frame,
 {
   if(!bInitialised)
     Init();
+
+  // save the current settings for selection
+  frame_ = &frame;
+  chk_rectify_image_display_ = chk_rectify_image_display;
+  chk_display_trajectory_ = chk_display_trajectory;
+  chk_display_3d_features_ = chk_display_3d_features;
+  chk_display_3d_uncertainties_ = chk_display_3d_uncertainties;
+  chk_display_2d_descriptors_ = chk_display_2d_descriptors;
+  chk_display_2d_search_regions_ = chk_display_2d_search_regions;
+  chk_display_initialisation_ = chk_display_initialisation;
 
   glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -293,7 +308,12 @@ void GraphicTool::DrawRawAR(cv::Mat frame,
           // Draw search regions
           if (chk_display_2d_search_regions) {
             if ((*it)->selected_flag_) {
+              if (selection_mode_)
+                glLoadName(GLuint((*it)->label_ + 1));
+
               Draw2DCovariance((*it)->h_(0), (*it)->h_(1), (*it)->S_, kCovariancesNumberOfSigma_, 1.0);
+
+              glLoadName(0);
             }
           }
 
@@ -314,7 +334,7 @@ void GraphicTool::DrawRawAR(cv::Mat frame,
               draw_patch_y = monoslam_ptr_->full_feature_model_->hiRES_(1);
             }
 
-            DrawDescriptors(draw_patch_x, draw_patch_y, (*it)->patch_);
+            DrawDescriptors(draw_patch_x, draw_patch_y, (*it)->patch_, (*it)->label_ + 1);
           }
         }
       }
@@ -469,6 +489,9 @@ void GraphicTool::DrawEstimatedSemiInfiniteLine(const Eigen::VectorXd &yigraphic
   Eigen::Vector3d hhat(yigraphics(3), yigraphics(4), yigraphics(5));
   Eigen::Vector3d y1 = y0 + hhat * line_length;
 
+  if (selection_mode_)
+    glLoadName(GLuint(name_to_draw));
+
   // Draw line with raw GL to avoid including it in rotation centre
   glDisable(GL_LIGHT0);
   glDisable(GL_LIGHTING);
@@ -480,6 +503,7 @@ void GraphicTool::DrawEstimatedSemiInfiniteLine(const Eigen::VectorXd &yigraphic
 
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
+  glLoadName(0);
 }
 
 void GraphicTool::DrawAxes()
@@ -581,11 +605,16 @@ void GraphicTool::DrawAxes()
 }
 
 void GraphicTool::DrawDescriptors(double draw_patch_x, double draw_patch_y,
-                                  const cv::Mat &patch)
+                                  const cv::Mat &patch, const int name_to_draw)
 {
+  if (selection_mode_)
+    glLoadName(GLuint(name_to_draw));
+
   DrawPatch(draw_patch_x, draw_patch_y, patch);
   Draw2DRectangle(draw_patch_x, draw_patch_y,
                   monoslam_ptr_->kBoxSize_ + 2, monoslam_ptr_->kBoxSize_ + 2);
+
+  glLoadName(0);
 }
 
 void GraphicTool::DrawPatch(const double u, const double v, const cv::Mat &patch)
@@ -1184,6 +1213,9 @@ void GraphicTool::DrawLine(const Eigen::Vector3d &r0, Eigen::Vector3d &r1)
 
 void GraphicTool::DrawPoint(const Eigen::Vector3d &r0, const int name)
 {
+  if (selection_mode_)
+    glLoadName(GLuint(name));
+
   glDisable(GL_LIGHT0);
   glDisable(GL_LIGHTING);
 
@@ -1195,6 +1227,8 @@ void GraphicTool::DrawPoint(const Eigen::Vector3d &r0, const int name)
 
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
+
+  glLoadName(0);
 }
 
 void GraphicTool::DrawCovariance(const Eigen::VectorXd rW,
@@ -1202,6 +1236,9 @@ void GraphicTool::DrawCovariance(const Eigen::VectorXd rW,
                                  const double number_of_sigma,
                                  const int name)
 {
+  if (selection_mode_)
+    glLoadName(GLuint(name));
+
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
@@ -1225,6 +1262,7 @@ void GraphicTool::DrawCovariance(const Eigen::VectorXd rW,
   gluSphere(sphere_quad_, 1, 20, 20);
 
   glPopMatrix();
+  glLoadName(0);
 }
 
 void GraphicTool::Draw2DCovariance(const double u, const double v,
@@ -1359,6 +1397,13 @@ void GraphicTool::Set2DDrawingPosition(const double u, const double v)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
+  // Set projection
+  if (selection_mode_) {
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    gluPickMatrix((GLdouble)clicked_x_, (GLdouble)clicked_y_, 7.0, 7.0, viewport);
+  }
+
   // Perspective projection
   glFrustum(kMoveClippingPlaneFactor_ * monoslam_ptr_->camera_->xL_,
             kMoveClippingPlaneFactor_ * monoslam_ptr_->camera_->xR_,
@@ -1384,7 +1429,10 @@ void GraphicTool::Set2DDrawingPosition(const double u, const double v)
 void GraphicTool::SetProjectionMatrix()
 {
   glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
+
+  if (!selection_mode_) {
+    glLoadIdentity();
+  }
 
   // Perspective projection
   glFrustum(kMoveClippingPlaneFactor_ * monoslam_ptr_->camera_->xL_,
@@ -1422,6 +1470,104 @@ void GraphicTool::UpdateDrawingDimension(const Eigen::Vector3d& v)
   if (v(1) > ymax_) ymax_ = v(1);
   if (v(2) < zmin_) zmin_ = v(2);
   if (v(2) > zmax_) zmax_ = v(2);
+}
+
+int GraphicTool::Picker(int x, int y, bool threed)
+{
+  const int SELECTBUFSIZE = 512;
+
+  // Work out which object was clicked on
+  GLuint  select_buffer[SELECTBUFSIZE];
+  GLint   hits;
+
+  clicked_x_ = x;
+  clicked_y_ = y;
+
+  glSelectBuffer(SELECTBUFSIZE, select_buffer);
+  glRenderMode(GL_SELECT);
+
+  glInitNames();
+  glPushName(0);
+
+  glMatrixMode(GL_PROJECTION);
+
+  GLdouble  proj_mat[16];
+  glGetDoublev(GL_PROJECTION_MATRIX, proj_mat);
+
+  glLoadIdentity();
+
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  gluPickMatrix((GLdouble)x, (GLdouble)y, 7.0, 7.0, viewport);
+
+  if (threed)
+    glMultMatrixd(proj_mat);
+
+  glMatrixMode(GL_MODELVIEW);
+
+  if (!threed)
+    glLoadIdentity();
+
+  selection_mode_ = true;
+
+  if (threed) {
+    Draw3dScene(chk_display_trajectory_,
+                chk_display_3d_features_,
+                chk_display_3d_uncertainties_);
+  }
+  else {
+    DrawAR(*frame_,
+           chk_rectify_image_display_,
+           chk_display_trajectory_,
+           chk_display_3d_features_,
+           chk_display_3d_uncertainties_,
+           chk_display_2d_descriptors_,
+           chk_display_2d_search_regions_,
+           chk_display_initialisation_);
+  }
+
+  selection_mode_ = false;
+
+  // Process any hits we've got
+  hits = glRenderMode(GL_RENDER);
+
+  GLuint  *ptr = select_buffer;
+
+  // Find if we have selected a real item;
+  // if more than one then choose the closest
+  int selected_item = 0;
+  double  closest_distance = 10000000000.0;
+
+  // Structure of select_buffer:
+  // For each hit this ints:
+  // 1. number of names (always 1?)
+  // 2. z1
+  // 3. z2 (? what is the difference?)
+  // 4. (or more) the names
+  for (int i = 0; i < hits; ++i) {
+    GLuint  number_of_names = *ptr++;
+    // Skip past z1...
+    ptr++;
+
+    double z2 = double(*ptr++ / 0x7fffffff);
+    GLuint name = 0;
+
+    for (int j = 0; j < int(number_of_names); ++j) {
+      // Don't know why there would be more than one name?
+      // Just take the last one
+      name = *ptr++;
+    }
+
+    if (name != 0) {
+      // zero name isn't a real object
+      if (z2 < closest_distance) {
+        selected_item = name;
+        closest_distance = z2;
+      }
+    }
+  }
+
+  return  selected_item;
 }
 
 } // namespace SceneLib2

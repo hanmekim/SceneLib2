@@ -34,6 +34,7 @@ SET(SOURCES monoslam.h monoslam.cpp
             graphic/graphictool.h graphic/graphictool.cpp
             support/math_util.h support/math_util.cpp
             support/eigen_util.h support/eigen_util.cpp
+            support/pangolin_util.h support/pangolin_util.cpp
             improc/improc.h improc/improc.cpp
             improc/search_multiple_overlapping_ellipses.h
             improc/search_multiple_overlapping_ellipses.cpp)

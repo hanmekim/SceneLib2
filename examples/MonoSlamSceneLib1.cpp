@@ -36,6 +36,7 @@
 #include <pangolin/pangolin.h>
 
 #include "monoslam.h"
+#include "support/pangolin_util.h"
 
 using namespace std;
 
@@ -47,6 +48,8 @@ int main(int argc, char **argv)
   bool  g_play = false;
   int   g_frame_id  = 0;
 
+  SceneLib2::Frame  frame;
+
   // Create & initialise a Scene object
   g_monoslam = new SceneLib2::MonoSLAM();
   g_monoslam->Init("../../data/SceneLib2.cfg");
@@ -55,24 +58,24 @@ int main(int argc, char **argv)
   pangolin::CreateGlutWindowAndBind("SceneLib2 - MonoSlamSceneLib1", 800, 480);
 
   // Define Camera Render Object (for view / scene browsing)
-  pangolin::OpenGlRenderState cam_object(pangolin::ProjectionMatrix(320,
-                                                                    240,
-                                                                    g_monoslam->camera_->fku_,
-                                                                    g_monoslam->camera_->fkv_,
-                                                                    g_monoslam->camera_->centre_(0),
-                                                                    g_monoslam->camera_->centre_(1),
-                                                                    0.00001, 1000),
-                                         pangolin::ModelViewLookAt(-0.0, 0.18, -1.4, 0.0, 0.13, 0.0, pangolin::AxisY));
+  pangolin::OpenGlRenderState view_state_3d(pangolin::ProjectionMatrix(g_monoslam->camera_->width_,
+                                                                       g_monoslam->camera_->height_,
+                                                                       g_monoslam->camera_->fku_,
+                                                                       g_monoslam->camera_->fkv_,
+                                                                       g_monoslam->camera_->centre_(0),
+                                                                       g_monoslam->camera_->centre_(1),
+                                                                       0.00001, 1000),
+                                            pangolin::ModelViewLookAt(-0.0, 0.18, -1.4, 0.0, 0.13, 0.0, pangolin::AxisY));
 
   // Add 2 panels, 3D and camera viewers
   pangolin::View  &left_panel1  = pangolin::CreatePanel("left_panel1").SetBounds(0.5, 1.0, 0.0, 0.3);
   pangolin::View  &left_panel2  = pangolin::CreatePanel("left_panel2").SetBounds(0.0, 0.5, 0.0, 0.3);
   pangolin::View  &right_panel1 = pangolin::CreatePanel("right_panel1").SetBounds(0.5, 1.0, 0.3, 0.6);
   pangolin::View  &right_panel2 = pangolin::CreatePanel("right_panel2").SetBounds(0.0, 0.5, 0.3, 0.6);
-  pangolin::View  &view_3d      = pangolin::CreateDisplay().SetBounds(0.5, 1.0, 0.6, 1.0, -4./3.).SetHandler(new pangolin::Handler3D(cam_object));
-  pangolin::View  &view_cam     = pangolin::Display("view_cam").SetBounds(0.0, 0.5, 0.6, 1.0, 4./3.);
-
-  SceneLib2::Frame  frame;
+  pangolin::View  &view_3d      = pangolin::CreateDisplay().SetBounds(0.5, 1.0, 0.6, 1.0, -4./3.)
+      .SetHandler(new SceneLib2::Handler3D(view_state_3d, g_monoslam));
+  pangolin::View  &view_cam     = pangolin::Display("view_cam").SetBounds(0.0, 0.5, 0.6, 1.0, 4./3.)
+      .SetHandler(new SceneLib2::Handler2D(g_monoslam));
 
   // Default hooks for exiting (Esc) and fullscreen (tab).
   while (!pangolin::ShouldQuit()) {
@@ -112,7 +115,7 @@ int main(int argc, char **argv)
     //=========================================================================
     // Activate efficiently by object
     // (3D Handler requires depth testing to be enabled)
-    view_3d.ActivateScissorAndClear(cam_object);
+    view_3d.ActivateScissorAndClear(view_state_3d);
 
     g_monoslam->graphic_tool_->Draw3dScene(chk_display_trajectory,
                                            chk_display_3d_features,
@@ -180,9 +183,21 @@ int main(int argc, char **argv)
     if (pangolin::Pushed(btn_stop))
       g_play = false;
 
-    if (pangolin::Pushed(btn_print_robot_state)) {
+    if (pangolin::Pushed(btn_initialise_manual_feature))
+      g_monoslam->InitialiseFeature(frame.data);
+
+    if (pangolin::Pushed(btn_initialise_auto_feature))
+      g_monoslam->InitialiseAutoFeature(frame.data);
+
+    if (pangolin::Pushed(btn_print_robot_state))
       g_monoslam->print_robot_state();
-    }
+
+    if (pangolin::Pushed(btn_delete_feature))
+      g_monoslam->delete_feature();
+
+    if (pangolin::Pushed(btn_save_patch))
+      g_monoslam->SavePatch();
+
     if (pangolin::Pushed(btn_quit))
       exit(0);
 

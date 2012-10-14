@@ -83,7 +83,7 @@ features and to make it better.
 
 5. Install Pangolin
  $ cd MY_EXTERNAL_LIBRARIES_DIRECTORY
- $ git clone git://github.com/stevenlovegrove/Pangolin.git
+ $ git clone git://github.com/hanmekim/Pangolin.git
  $ cd Pangolin
  $ mkdir BUILD
  $ cd BUILD
@@ -151,11 +151,6 @@ features and to make it better.
 ****************
 There are known issues, and they will be resolved as soon as possible.
  * Detected features are slightly different to the original version's.
- * The following functionalities are not supported yet
-   - Initialise Manual Feature button
-   - Initialise Auto Feature button
-   - Delete Feature button
-   - Save Patch button
  * Most of member functions and variables are currently public for convenient
    debugging, and they will be properly encapsulated later.
 

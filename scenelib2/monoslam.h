@@ -76,7 +76,9 @@ class MonoSLAM {
   void Init(const string &config_path);
 
   bool GoOneStep(cv::Mat frame, bool save_trajectory, bool enable_mapping);
+  void InitialiseAutoFeature(cv::Mat frame);
   void print_robot_state();
+  bool SavePatch();
 
   int auto_select_n_features(int n);
   bool deselect_feature(Feature *fp);
@@ -101,6 +103,8 @@ class MonoSLAM {
   void normalise_state();
   void delete_bad_features();
   void exterminate_features();
+  bool toggle_feature_lab(int lab);
+  Feature* find_feature_lab(int lab);
   void mark_feature_by_lab(int lab);
   bool delete_feature();
   bool AutoInitialiseFeature(cv::Mat frame, const Eigen::Vector3d &u);
