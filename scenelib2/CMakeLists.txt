@@ -39,7 +39,7 @@ SET(SOURCES monoslam.h monoslam.cpp
             improc/search_multiple_overlapping_ellipses.h
             improc/search_multiple_overlapping_ellipses.cpp)
 
-ADD_LIBRARY(${LIBRARY_NAME} ${SOURCES})
+ADD_LIBRARY(${LIBRARY_NAME} SHARED ${SOURCES})
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations")
