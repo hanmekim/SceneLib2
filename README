@@ -50,6 +50,7 @@ added and tested it for the following platforms, but, of course, I will
 increase its portability continuously (you can check the following platforms
 list later on).
  * Ubuntu 12.04 LTS - 32bits
+ * Ubuntu 12.04 LTS - 64bits (thanks to Prof. Davison for testing it)
 
 This library is a research-level software which is still in development. It
 will be frequently changed without notification to fix bugs, to add more
