@@ -4,8 +4,8 @@
  *
  * Copyright (c) 2012 Hanme Kim (hanme.kim@gmail.com)
  *
- * SceneLib2 is an open-source C++ library for SLAM originally designed and implemented
- * by Professor Andrew Davison (http://www.doc.ic.ac.uk/~ajd/) at Imperial College London.
+ * SceneLib2 is an open-source C++ library for SLAM originally designed and
+ * implemented by Andrew Davison and colleagues at the University of Oxford.
  *
  * I reimplemented his version with the following objectives;
  *  1. Understand his MonoSLAM algorithm in code level.
