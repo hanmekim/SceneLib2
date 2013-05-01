@@ -1,4 +1,4 @@
-CMakeLists.txt.user
+CMakeLists.txt.*
 BUILD/
 build/
 _doc/
