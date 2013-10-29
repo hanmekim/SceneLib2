@@ -186,8 +186,8 @@ bool MonoSLAM::GoOneStep(cv::Mat frame, bool save_trajectory, bool enable_mappin
 // @returns the number of visible features.
 int MonoSLAM::auto_select_n_features(int n)
 {
-  int cant_see_flag;   // Flag which we will set to 0 if a feature is
-                                // visible and various other values if it isn't
+  int cant_see_flag;    // Flag which we will set to 0 if a feature is
+                        // visible and various other values if it isn't
 
   // Deselect all features
   while (selected_feature_list_.size() != 0)

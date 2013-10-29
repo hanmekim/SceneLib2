@@ -78,16 +78,29 @@ void UsbCamGrabber::operator ()()
     if (frame_grabber_->IsFrameBufferFull()==false) {
 
       Frame   frame;
-      cv::Mat temp1(video_->Height(), video_->Width(), CV_8UC3);
-      cv::Mat temp2(video_->Height(), video_->Width(), CV_8UC1);
+      cv::Mat temp1, temp2;
+
+      if (!video_->PixFormat().compare("YUV422P"))
+        temp1.create(video_->Height(), video_->Width(), CV_8UC2);
+      else
+        temp1.create(video_->Height(), video_->Width(), CV_8UC3);
+
+      temp2.create(video_->Height(), video_->Width(), CV_8UC1);
 
       video_->GrabNext(temp1.data, true);
 
-      cv::cvtColor(temp1, temp2, CV_RGB2GRAY);
+      if (!video_->PixFormat().compare("YUV422P"))
+        cv::cvtColor(temp1, temp2, CV_YUV2GRAY_Y422);
+      else
+        cv::cvtColor(temp1, temp2, CV_RGB2GRAY);
 
       frame.frame_id = frame_id_;
       frame.data.create(240, 320, CV_8UC1);
-      cv::resize(temp2, frame.data, cv::Size(320,240), 1, 1, CV_INTER_LINEAR);
+
+      if ((temp2.cols!=320) || (temp2.rows!=240))
+        cv::resize(temp2, frame.data, cv::Size(320,240), 1, 1, CV_INTER_LINEAR);
+      else
+        frame.data = temp2.clone();
 
       ++frame_id_;
 

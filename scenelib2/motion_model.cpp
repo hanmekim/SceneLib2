@@ -36,6 +36,8 @@
 #include "motion_model.h"
 #include "support/math_util.h"
 
+#include <iostream>
+
 namespace SceneLib2 {
 
 MotionModel::MotionModel()
@@ -95,10 +97,8 @@ void MotionModel::func_fv_and_dfv_by_dxv(const Eigen::VectorXd &xv,
   rnew = rold + vold * delta_t;
 
   // qnew = q x q(omega * delta_t)
-
   // Keep qwt ( = q(omega * delta_t)) for later use
   Eigen::Quaterniond qwt = QuaternionFromAngularVelocity(omegaold * delta_t);
-
   qnew = qold * qwt;
 
   // vnew = v
