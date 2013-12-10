@@ -1,4 +1,9 @@
-CMakeLists.txt.*
+CMakeLists.txt*
+!CMakeLists.txt
 BUILD/
 build/
 _doc/
+*autosave
+*~
+_doxygen/
+
