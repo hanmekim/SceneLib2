@@ -80,7 +80,7 @@ void UsbCamGrabber::operator ()()
       Frame   frame;
       cv::Mat temp1, temp2;
 
-      if (!video_->PixFormat().format.compare("YUV422P"))
+      if (!video_->PixFormat().compare("YUV422P"))
         temp1.create(video_->Height(), video_->Width(), CV_8UC2);
       else
         temp1.create(video_->Height(), video_->Width(), CV_8UC3);
@@ -89,7 +89,7 @@ void UsbCamGrabber::operator ()()
 
       video_->GrabNext(temp1.data, true);
 
-      if (!video_->PixFormat().format.compare("YUV422P"))
+      if (!video_->PixFormat().compare("YUV422P"))
         cv::cvtColor(temp1, temp2, CV_YUV2GRAY_Y422);
       else
         cv::cvtColor(temp1, temp2, CV_RGB2GRAY);
