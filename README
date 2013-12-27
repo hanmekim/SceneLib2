@@ -84,7 +84,7 @@ features and to make it better.
 
 5. Install Pangolin
  $ cd MY_EXTERNAL_LIBRARIES_DIRECTORY
- $ git clone git://github.com/hanmekim/Pangolin.git
+ $ git clone https://github.com/stevenlovegrove/Pangolin.git
  $ cd Pangolin
  $ mkdir BUILD
  $ cd BUILD
