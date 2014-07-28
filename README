@@ -51,6 +51,7 @@ list later on).
  * Ubuntu 12.04 LTS - 32bits
  * Ubuntu 12.04 LTS - 64bits (thanks to Prof. Davison for testing it)
  * Ubuntu 12.10 - 64bits
+ * Mac OS X 10.9
 
 This library is a research-level software which is still in development. It
 will be frequently changed without notification to fix bugs, to add more
