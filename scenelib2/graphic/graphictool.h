@@ -39,6 +39,7 @@
 #include <Eigen/Eigen>
 #include <pangolin/pangolin.h>
 
+#include <GL/freeglut.h>
 #include "feature.h"
 
 namespace SceneLib2 {
