@@ -77,6 +77,11 @@ void FileGrabber::ProcessFiles(const boost::filesystem::path &directory)
 
     sort(files_vec_.begin(), files_vec_.end());
   }
+  
+  else 
+  {
+      throw std::runtime_error("provided directory doesn't exist!");
+  }
 }
 
 void FileGrabber::operator ()()
