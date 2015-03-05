@@ -99,10 +99,10 @@ int main(int argc, char **argv)
     static pangolin::Var<bool>    btn_stop("left_panel2.Stop", false, false);
 
     static pangolin::Var<string>  cap_controls_toggles("right_panel1.Controls Toggles", "");
-    static pangolin::Var<bool>    chk_toggle_tracking("right_panel1.Toggle Tracking", false);
-    static pangolin::Var<bool>    chk_enable_mapping("right_panel1.Enable Mapping", true);
-    static pangolin::Var<bool>    chk_output_tracked_images("right_panel1.Output Tracked Images", false);
-    static pangolin::Var<bool>    chk_output_raw_images("right_panel1.Output Raw Images", false);
+    static pangolin::Var<bool>    chk_toggle_tracking("right_panel1.Toggle Tracking", true, true);
+    static pangolin::Var<bool>    chk_enable_mapping("right_panel1.Enable Mapping", true, true);
+    static pangolin::Var<bool>    chk_output_tracked_images("right_panel1.Output Tracked Images", false, true);
+    static pangolin::Var<bool>    chk_output_raw_images("right_panel1.Output Raw Images", false, true);
 
     static pangolin::Var<string>  cap_action_controls("right_panel2.Action Controls", "");
     static pangolin::Var<bool>    btn_initialise_manual_feature("right_panel2.Initialise Manual Feature", false, false);
