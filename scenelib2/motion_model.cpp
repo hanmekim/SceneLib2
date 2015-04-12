@@ -293,31 +293,31 @@ void MotionModel::dqomegadt_by_domega(const Eigen::Vector3d &omega,
                                       const double delta_t,
                                       Eigen::MatrixXd &dqomegadt_by_domega)
 {
-  double  angle = sqrt(omega[0]*omega[0] + omega[1]*omega[1] + omega[2]*omega[2]);
-  double  angle2 = angle * angle;
-  double  angle3 = angle2 * angle;
-  double  omegax2 = omega[0] * omega[0];
-  double  omegay2 = omega[1] * omega[1];
-  double  omegaz2 = omega[2] * omega[2];
-  double  omegaxy = omega[0] * omega[1];
-  double  omegaxz = omega[0] * omega[2];
-  double  omegayz = omega[1] * omega[2];
+  double  angle     = sqrt(omega[0]*omega[0] + omega[1]*omega[1] + omega[2]*omega[2]);
+  double  angle2    = angle * angle;
+  double  angle3    = angle2 * angle;
+  double  angle_2   = angle / 2.0;
+  double  _2angle   = 2.0 * angle;
+  double  _2angle2  = 2.0 * angle2;
+  double  omegax2   = omega[0] * omega[0];
+  double  omegay2   = omega[1] * omega[1];
+  double  omegaz2   = omega[2] * omega[2];
+  double  omegaxy   = omega[0] * omega[1];
+  double  omegaxz   = omega[0] * omega[2];
+  double  omegayz   = omega[1] * omega[2];
 
-  dqomegadt_by_domega << -(omega[0] * delta_t * sin(angle/2.0)) / (2.0 * angle),
-                         -(omega[1] * delta_t * sin(angle/2.0)) / (2.0 * angle),
-                         -(omega[2] * delta_t * sin(angle/2.0)) / (2.0 * angle),
-                         //-----
-                         delta_t * (sin(angle/2.0) / angle + (omegax2 * cos(angle/2.0)) / (2.0*angle2) - (omegax2 * sin(angle/2.0)) / angle3),
-                         delta_t * ((omegaxy * cos(angle/2.0)) / (2.0*angle2) - (omegaxy * sin(angle/2.0)) / angle3),
-                         delta_t * ((omegaxz * cos(angle/2.0)) / (2.0*angle2) - (omegaxz * sin(angle/2.0)) / angle3),
-                         //-----
-                         delta_t * ((omegaxy * cos(angle/2.0)) / (2.0*angle2) - (omegaxy * sin(angle/2.0)) / angle3),
-                         delta_t * (sin(angle/2.0) / angle + (omegay2 * cos(angle/2.0)) / (2.0 * angle2) - (omegay2 * sin(angle/2.0)) / angle3),
-                         delta_t * ((omegayz * cos(angle/2.0)) / (2.0*angle2) - (omegayz * sin(angle/2.0)) / angle3),
-                         //-----
-                         delta_t * ((omegaxz * cos(angle/2.0)) / (2.0*angle2) - (omegaxz * sin(angle/2.0)) / angle3),
-                         delta_t * ((omegayz * cos(angle/2.0)) / (2.0*angle2) - (omegayz * sin(angle/2.0)) / angle3),
-                         delta_t * (sin(angle/2.0) / angle + (omegaz2 * cos(angle/2.0)) / (2.0*angle2) - (omegaz2 * sin(angle/2.0)) / angle3);
+  dqomegadt_by_domega << -(omega[0] * delta_t * sin(angle_2)) / (_2angle),
+                         -(omega[1] * delta_t * sin(angle_2)) / (_2angle),
+                         -(omega[2] * delta_t * sin(angle_2)) / (_2angle),
+                         delta_t * (sin(angle_2) / angle + (omegax2 * cos(angle_2)) / (_2angle2) - (omegax2 * sin(angle_2)) / angle3),
+                         delta_t * ((omegaxy * cos(angle_2)) / (_2angle2) - (omegaxy * sin(angle_2)) / angle3),
+                         delta_t * ((omegaxz * cos(angle_2)) / (_2angle2) - (omegaxz * sin(angle_2)) / angle3),
+                         delta_t * ((omegaxy * cos(angle_2)) / (_2angle2) - (omegaxy * sin(angle_2)) / angle3),
+                         delta_t * (sin(angle_2) / angle + (omegay2 * cos(angle_2)) / (_2angle2) - (omegay2 * sin(angle_2)) / angle3),
+                         delta_t * ((omegayz * cos(angle_2)) / (_2angle2) - (omegayz * sin(angle_2)) / angle3),
+                         delta_t * ((omegaxz * cos(angle_2)) / (_2angle2) - (omegaxz * sin(angle_2)) / angle3),
+                         delta_t * ((omegayz * cos(angle_2)) / (_2angle2) - (omegayz * sin(angle_2)) / angle3),
+                         delta_t * (sin(angle_2) / angle + (omegaz2 * cos(angle_2)) / (_2angle2) - (omegaz2 * sin(angle_2)) / angle3);
 
 //  -(omegax * tau * sin(theta/2)) / (2 * theta),
 //  -(omegay * tau * sin(theta/2)) / (2 * theta),
