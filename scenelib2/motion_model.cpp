@@ -135,7 +135,8 @@ void MotionModel::func_fv_and_dfv_by_dxv(const Eigen::VectorXd &xv,
 
   // Use function below for dqwt_by_domega
   Eigen::MatrixXd Temp43A(4,3);
-  dqomegadt_by_domega(omegaold, delta_t, Temp43A);
+  dqomegadt_by_domega(omegaold * delta_t, delta_t, Temp43A);
+//  dqomegadt_by_domega(omegaold, delta_t, Temp43A);
 
   // Multiply them together
   Eigen::MatrixXd Temp43B(4,3);
@@ -203,7 +204,8 @@ void MotionModel::func_Q(const Eigen::VectorXd &xv, const Eigen::VectorXd &u, co
 
   // Use function below for dqwt_by_domega
   Eigen::MatrixXd Temp43A(4,3);
-  dqomegadt_by_domega(omegaold, delta_t, Temp43A);
+  dqomegadt_by_domega(omegaold * delta_t, delta_t, Temp43A);
+//  dqomegadt_by_domega(omegaold, delta_t, Temp43A);
 
   // Multiply them together
   Eigen::MatrixXd Temp43B(4,3);
@@ -291,31 +293,31 @@ void MotionModel::dqomegadt_by_domega(const Eigen::Vector3d &omega,
                                       const double delta_t,
                                       Eigen::MatrixXd &dqomegadt_by_domega)
 {
-//  double  angle = sqrt(omega[0]*omega[0] + omega[1]*omega[1] + omega[2]*omega[2]);
-//  double  angle2 = angle * angle;
-//  double  angle3 = angle2 * angle;
-//  double  omegax2 = omega[0] * omega[0];
-//  double  omegay2 = omega[1] * omega[1];
-//  double  omegaz2 = omega[2] * omega[2];
-//  double  omegaxy = omega[0] * omega[1];
-//  double  omegaxz = omega[0] * omega[2];
-//  double  omegayz = omega[1] * omega[2];
+  double  angle = sqrt(omega[0]*omega[0] + omega[1]*omega[1] + omega[2]*omega[2]);
+  double  angle2 = angle * angle;
+  double  angle3 = angle2 * angle;
+  double  omegax2 = omega[0] * omega[0];
+  double  omegay2 = omega[1] * omega[1];
+  double  omegaz2 = omega[2] * omega[2];
+  double  omegaxy = omega[0] * omega[1];
+  double  omegaxz = omega[0] * omega[2];
+  double  omegayz = omega[1] * omega[2];
 
-//  dqomegadt_by_domega << -(omega[0] * delta_t * sin(angle/2.0)) / (2.0 * angle),
-//                         -(omega[1] * delta_t * sin(angle/2.0)) / (2.0 * angle),
-//                         -(omega[2] * delta_t * sin(angle/2.0)) / (2.0 * angle),
-//                         //-----
-//                         delta_t * (sin(angle/2.0) / angle + (omegax2 * cos(angle/2.0)) / (2.0*angle2) - (omegax2 * sin(angle/2.0)) / angle3),
-//                         delta_t * ((omegaxy * cos(angle/2.0)) / (2.0*angle2) - (omegaxy * sin(angle/2.0)) / angle3),
-//                         delta_t * ((omegaxz * cos(angle/2.0)) / (2.0*angle2) - (omegaxz * sin(angle/2.0)) / angle3),
-//                         //-----
-//                         delta_t * ((omegaxy * cos(angle/2.0)) / (2.0*angle2) - (omegaxy * sin(angle/2.0)) / angle3),
-//                         delta_t * (sin(angle/2.0) / angle + (omegay2 * cos(angle/2.0)) / (2.0 * angle2) - (omegay2 * sin(angle/2.0)) / angle3),
-//                         delta_t * ((omegayz * cos(angle/2.0)) / (2.0*angle2) - (omegayz * sin(angle/2.0)) / angle3),
-//                         //-----
-//                         delta_t * ((omegaxz * cos(angle/2.0)) / (2.0*angle2) - (omegaxz * sin(angle/2.0)) / angle3),
-//                         delta_t * ((omegayz * cos(angle/2.0)) / (2.0*angle2) - (omegayz * sin(angle/2.0)) / angle3),
-//                         delta_t * (sin(angle/2.0) / angle + (omegaz2 * cos(angle/2.0)) / (2.0*angle2) - (omegaz2 * sin(angle/2.0)) / angle3);
+  dqomegadt_by_domega << -(omega[0] * delta_t * sin(angle/2.0)) / (2.0 * angle),
+                         -(omega[1] * delta_t * sin(angle/2.0)) / (2.0 * angle),
+                         -(omega[2] * delta_t * sin(angle/2.0)) / (2.0 * angle),
+                         //-----
+                         delta_t * (sin(angle/2.0) / angle + (omegax2 * cos(angle/2.0)) / (2.0*angle2) - (omegax2 * sin(angle/2.0)) / angle3),
+                         delta_t * ((omegaxy * cos(angle/2.0)) / (2.0*angle2) - (omegaxy * sin(angle/2.0)) / angle3),
+                         delta_t * ((omegaxz * cos(angle/2.0)) / (2.0*angle2) - (omegaxz * sin(angle/2.0)) / angle3),
+                         //-----
+                         delta_t * ((omegaxy * cos(angle/2.0)) / (2.0*angle2) - (omegaxy * sin(angle/2.0)) / angle3),
+                         delta_t * (sin(angle/2.0) / angle + (omegay2 * cos(angle/2.0)) / (2.0 * angle2) - (omegay2 * sin(angle/2.0)) / angle3),
+                         delta_t * ((omegayz * cos(angle/2.0)) / (2.0*angle2) - (omegayz * sin(angle/2.0)) / angle3),
+                         //-----
+                         delta_t * ((omegaxz * cos(angle/2.0)) / (2.0*angle2) - (omegaxz * sin(angle/2.0)) / angle3),
+                         delta_t * ((omegayz * cos(angle/2.0)) / (2.0*angle2) - (omegayz * sin(angle/2.0)) / angle3),
+                         delta_t * (sin(angle/2.0) / angle + (omegaz2 * cos(angle/2.0)) / (2.0*angle2) - (omegaz2 * sin(angle/2.0)) / angle3);
 
 //  -(omegax * tau * sin(theta/2)) / (2 * theta),
 //  -(omegay * tau * sin(theta/2)) / (2 * theta),
@@ -333,23 +335,23 @@ void MotionModel::dqomegadt_by_domega(const Eigen::Vector3d &omega,
 //  tau * ((omegay*omegaz*cos(theta/2))/(2*(omegax^2 + omegay^2 + omegaz^2)) - (omegay*omegaz*sin(theta/2))/(omegax^2 + omegay^2 + omegaz^2)^(3/2)),
 //  tau * (sin(theta/2)/theta + (omegaz^2*cos(theta/2))/(2*(omegax^2 + omegay^2 + omegaz^2)) - (omegaz^2*sin(theta/2))/(omegax^2 + omegay^2 + omegaz^2)^(3/2))
 
-  // Modulus
-  double omegamod = sqrt(omega(0) * omega(0) + omega(1) * omega(1) +
-                         omega(2) * omega(2));
+//  // Modulus
+//  double omegamod = sqrt(omega(0) * omega(0) + omega(1) * omega(1) +
+//                         omega(2) * omega(2));
 
-  // Use generic ancillary functions to calculate components of Jacobian
-  dqomegadt_by_domega(0, 0) = dq0_by_domegaA(omega(0), omegamod, delta_t);
-  dqomegadt_by_domega(0, 1) = dq0_by_domegaA(omega(1), omegamod, delta_t);
-  dqomegadt_by_domega(0, 2) = dq0_by_domegaA(omega(2), omegamod, delta_t);
-  dqomegadt_by_domega(1, 0) = dqA_by_domegaA(omega(0), omegamod, delta_t);
-  dqomegadt_by_domega(1, 1) = dqA_by_domegaB(omega(0), omega(1), omegamod, delta_t);
-  dqomegadt_by_domega(1, 2) = dqA_by_domegaB(omega(0), omega(2), omegamod, delta_t);
-  dqomegadt_by_domega(2, 0) = dqA_by_domegaB(omega(1), omega(0), omegamod, delta_t);
-  dqomegadt_by_domega(2, 1) = dqA_by_domegaA(omega(1), omegamod, delta_t);
-  dqomegadt_by_domega(2, 2) = dqA_by_domegaB(omega(1), omega(2), omegamod, delta_t);
-  dqomegadt_by_domega(3, 0) = dqA_by_domegaB(omega(2), omega(0), omegamod, delta_t);
-  dqomegadt_by_domega(3, 1) = dqA_by_domegaB(omega(2), omega(1), omegamod, delta_t);
-  dqomegadt_by_domega(3, 2) = dqA_by_domegaA(omega(2), omegamod, delta_t);
+//  // Use generic ancillary functions to calculate components of Jacobian
+//  dqomegadt_by_domega(0, 0) = dq0_by_domegaA(omega(0), omegamod, delta_t);
+//  dqomegadt_by_domega(0, 1) = dq0_by_domegaA(omega(1), omegamod, delta_t);
+//  dqomegadt_by_domega(0, 2) = dq0_by_domegaA(omega(2), omegamod, delta_t);
+//  dqomegadt_by_domega(1, 0) = dqA_by_domegaA(omega(0), omegamod, delta_t);
+//  dqomegadt_by_domega(1, 1) = dqA_by_domegaB(omega(0), omega(1), omegamod, delta_t);
+//  dqomegadt_by_domega(1, 2) = dqA_by_domegaB(omega(0), omega(2), omegamod, delta_t);
+//  dqomegadt_by_domega(2, 0) = dqA_by_domegaB(omega(1), omega(0), omegamod, delta_t);
+//  dqomegadt_by_domega(2, 1) = dqA_by_domegaA(omega(1), omegamod, delta_t);
+//  dqomegadt_by_domega(2, 2) = dqA_by_domegaB(omega(1), omega(2), omegamod, delta_t);
+//  dqomegadt_by_domega(3, 0) = dqA_by_domegaB(omega(2), omega(0), omegamod, delta_t);
+//  dqomegadt_by_domega(3, 1) = dqA_by_domegaB(omega(2), omega(1), omegamod, delta_t);
+//  dqomegadt_by_domega(3, 2) = dqA_by_domegaA(omega(2), omegamod, delta_t);
 }
 
 //
