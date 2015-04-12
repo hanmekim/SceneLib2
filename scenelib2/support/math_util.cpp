@@ -79,14 +79,14 @@ Eigen::Quaterniond QuaternionFromAngularVelocity(const Eigen::Vector3d av)
   return  q;
 }
 
-Eigen::Matrix4d dq3_by_dq1(const Eigen::Quaterniond &q1)
+Eigen::Matrix4d dq3_by_dq1(const Eigen::Quaterniond &q2)
 {
   Eigen::Matrix4d m;
 
-  double  x = q1.x();
-  double  y = q1.y();
-  double  z = q1.z();
-  double  w = q1.w();
+  double  x = q2.x();
+  double  y = q2.y();
+  double  z = q2.z();
+  double  w = q2.w();
 
   m << w, -x, -y, -z,
        x,  w, -z,  y,
@@ -96,14 +96,14 @@ Eigen::Matrix4d dq3_by_dq1(const Eigen::Quaterniond &q1)
   return m;
 }
 
-Eigen::Matrix4d dq3_by_dq2(const Eigen::Quaterniond &q2)
+Eigen::Matrix4d dq3_by_dq2(const Eigen::Quaterniond &q1)
 {
   Eigen::Matrix4d m;
 
-  double  x = q2.x();
-  double  y = q2.y();
-  double  z = q2.z();
-  double  w = q2.w();
+  double  x = q1.x();
+  double  y = q1.y();
+  double  z = q1.z();
+  double  w = q1.w();
 
   m << w, -x, -y, -z,
        x,  w,  z, -y,
