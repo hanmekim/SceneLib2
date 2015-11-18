@@ -90,7 +90,7 @@ features and to make it better.
  $ cd Pangolin
  $ mkdir BUILD
  $ cd BUILD
- $ cmake ..
+ $ cmake -DCPP11_NO_BOOST=1 -DFORCE_GLUT=1 ..
  $ make -j4
  $ sudo make install
 
