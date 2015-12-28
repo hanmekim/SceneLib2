@@ -54,8 +54,10 @@ int main(int argc, char **argv)
   g_monoslam = new SceneLib2::MonoSLAM();
   g_monoslam->Init("../../data/SceneLib2.cfg");
 
+  glutInit(&argc, argv);
+
   // Create main window
-  pangolin::CreateGlutWindowAndBind("SceneLib2 - MonoSlamSceneLib1", 800, 480);
+  pangolin::CreateWindowAndBind("SceneLib2 - MonoSlamSceneLib1", 800, 480);
 
   // Define Camera Render Object (for view / scene browsing)
   pangolin::OpenGlRenderState view_state_3d(pangolin::ProjectionMatrix(g_monoslam->camera_->width_,
@@ -205,7 +207,7 @@ int main(int argc, char **argv)
       g_next = true;
 
     // Swap frames and Process Events
-    pangolin::FinishGlutFrame();
+    pangolin::FinishFrame();
   }
 
   return  0;

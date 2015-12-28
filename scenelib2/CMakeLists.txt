@@ -1,23 +1,22 @@
 ############################################################
 ## Required Dependencies
-FIND_PACKAGE(Pangolin REQUIRED)
-INCLUDE_DIRECTORIES(${Pangolin_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Pangolin_LIBRARY_DIRS})
-LINK_LIBRARIES(${Pangolin_LIBRARIES})
-
 FIND_PACKAGE(Boost COMPONENTS thread filesystem system REQUIRED QUIET)
 FIND_PACKAGE(Eigen3 REQUIRED)
+FIND_PACKAGE(GLUT REQUIRED)
 FIND_PACKAGE(OpenCV REQUIRED)
+FIND_PACKAGE(Pangolin REQUIRED)
 
-LIST(APPEND LINK_LIBS "${Boost_LIBRARIES};${OpenCV_LIBRARIES}")
-LIST(APPEND LIB_DIRS  "${Boost_LIBRARY_DIRS};${PROJECT_BINARY_DIR}/${LIBRARY_NAME}")
-LIST(APPEND USER_INC  "${Boost_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR};${EIGEN3_INCLUDE_DIR}")
+# Apply required dependencies settings
+LIST(APPEND USER_INC "${Boost_INCLUDE_DIRS};${Pangolin_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR};${CMAKE_CURRENT_BINARY_DIR};${EIGEN3_INCLUDE_DIR};${OpenCV_INCLUDE_DIRS}")
+LIST(APPEND LIB_DIRS "${Boost_LIBRARY_DIRS};${Pangolin_LIBRARY_DIRS};${PROJECT_BINARY_DIR}/src;${OpenCV_LIB_DIR}")
+LIST(APPEND LINK_LIBS "${Boost_LIBRARIES};${GLUT_LIBRARIES};${Pangolin_LIBRARIES};${OpenCV_LIBS}")
 
 ############################################################
 ## Add Libraries / Include Directories / Link Directories
-INCLUDE_DIRECTORIES(${INTERNAL_INC} ${USER_INC})
+INCLUDE_DIRECTORIES(${INTERNAL_INC})
+INCLUDE_DIRECTORIES(${USER_INC})
+LINK_DIRECTORIES(${LIB_DIRS})
 LINK_LIBRARIES(${LINK_LIBS})
-LINK_DIRECTORIES(${LIB_DIR})
 
 ############################################################
 ## SceneLib2 Library Sources
@@ -40,10 +39,6 @@ SET(SOURCES monoslam.h monoslam.cpp
             improc/search_multiple_overlapping_ellipses.cpp)
 
 ADD_LIBRARY(${LIBRARY_NAME} SHARED ${SOURCES})
-
-IF(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_CXX_FLAGS "-Wall -Wno-error=deprecated-declarations")
-ENDIF()
 
 ############################################################
 ## Export config file for easy inclusion into other projects: FIND_PACKAGE(SceneLib2)
