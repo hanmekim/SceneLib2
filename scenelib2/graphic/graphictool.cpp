@@ -1249,10 +1249,10 @@ void GraphicTool::DrawCovariance(const Eigen::VectorXd rW,
 
   // Eigenvectors become rotation matrix
   // Turn into 4*4 transformation
-  GLfloat Varray[16] = {es.eigenvectors().row(0)(0), es.eigenvectors().row(1)(0), es.eigenvectors().row(2)(0), 0.0,
-                       es.eigenvectors().row(0)(1), es.eigenvectors().row(1)(1), es.eigenvectors().row(2)(1), 0.0,
-                       es.eigenvectors().row(0)(2), es.eigenvectors().row(1)(2), es.eigenvectors().row(2)(2), 0.0,
-                       0.0, 0.0, 0.0, 1.0};
+  GLfloat Varray[16] = {(float)(es.eigenvectors().row(0)(0)), (float)(es.eigenvectors().row(1)(0)), (float)(es.eigenvectors().row(2)(0)), 0.0f,
+                        (float)(es.eigenvectors().row(0)(1)), (float)(es.eigenvectors().row(1)(1)), (float)(es.eigenvectors().row(2)(1)), 0.0f,
+                        (float)(es.eigenvectors().row(0)(2)), (float)(es.eigenvectors().row(1)(2)), (float)(es.eigenvectors().row(2)(2)), 0.0f,
+                        0.0f, 0.0f, 0.0f, 1.0f};
   glMultMatrixf(Varray);
 
   glScalef(sqrt(es.eigenvalues()[0]) * number_of_sigma,
@@ -1277,10 +1277,10 @@ void GraphicTool::Draw2DCovariance(const double u, const double v,
 
   // Eigenvectors become rotation matrix
   // Turn into 4*4 transformation
-  GLfloat Varray[16] = {eigen.eigenvectors().row(0)(0), eigen.eigenvectors().row(1)(0), 0.0, 0.0,
-                       eigen.eigenvectors().row(0)(1), eigen.eigenvectors().row(1)(1), 0.0, 0.0,
-                       0.0, 0.0, 0.0, 0.0,
-                       0.0, 0.0, 0.0, 1.0};
+  GLfloat Varray[16] = {(float)(eigen.eigenvectors().row(0)(0)), (float)(eigen.eigenvectors().row(1)(0)), 0.0f, 0.0f,
+                        (float)(eigen.eigenvectors().row(0)(1)), (float)(eigen.eigenvectors().row(1)(1)), 0.0f, 0.0f,
+                        0.0f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 0.0f, 0.0f, 1.0f};
   glMultMatrixf(Varray);
 
   glScalef(sqrt(eigen.eigenvalues()[0]) * number_of_sigma,

@@ -54,10 +54,12 @@ int main(int argc, char **argv)
   g_monoslam = new SceneLib2::MonoSLAM();
   g_monoslam->Init("../../data/SceneLib2.cfg");
 
-  glutInit(&argc, argv);
-
   // Create main window
   pangolin::CreateWindowAndBind("SceneLib2 - MonoSlamSceneLib1", 800, 480);
+
+#ifndef __APPLE__
+  glutInit(&argc, argv);
+#endif
 
   // Define Camera Render Object (for view / scene browsing)
   pangolin::OpenGlRenderState view_state_3d(pangolin::ProjectionMatrix(g_monoslam->camera_->width_,
